@@ -131,6 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Conexiones permitidas con cors
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173"  # Si usas Vite
 ]
 
 REST_FRAMEWORK = {
