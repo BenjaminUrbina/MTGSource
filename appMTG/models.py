@@ -14,7 +14,7 @@ class usuario_mtg(models.Model):
         db_table = "usuario_mtg"
 
     def __str__(self):
-        return f"{self.nombre} ({self.correo})"
+        return f"{self.nombre} ({self.user.email})"
 
 
 class Inventario(models.Model):
