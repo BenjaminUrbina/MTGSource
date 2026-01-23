@@ -31,7 +31,7 @@ class Inventario(models.Model):
         db_table = "inventario"
 
     def __str__(self):
-        return f"{self.nombre_inventario} - {self.usuario.nombre}"
+        return f"{self.nombre_inventario}"
 
 
 class Carta(models.Model):
