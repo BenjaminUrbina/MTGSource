@@ -19,7 +19,11 @@ class usuario_mtg(models.Model):
 
 class Inventario(models.Model):
     nombre_inventario = models.CharField(primary_key=True, max_length=150)
-
+    # False= No se puede compartir
+    is_public = models.BooleanField(default=False)
+    share_token = models.CharField(
+        max_length=64, unique=True, null=True, blank=True)
+    is_sharing_enabled = models.BooleanField(default=False)
     # FK a usuario_mtg
     usuario = models.ForeignKey(
         usuario_mtg,
