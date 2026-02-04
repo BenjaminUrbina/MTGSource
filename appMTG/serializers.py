@@ -3,40 +3,45 @@ from django.contrib.auth.models import User
 from .models import Carta, AlmacenCartas, Inventario, usuario_mtg
 
 
-class CartasSerializer(serializers.ModelSerializer):
+class CartaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Carta
-        fields = '__all__'
+        fields = [
+            "id_scryfall",
+            "nombre",
+            "imagen_url",
+            "oracle_id",
+            "collector_number",
+            "set_code",
+            "type_line",
+            "border_color",
+            "full_art",
+            "promo",
+            "scryfall_uri",
+            "prints_search_uri",
+            "purchase_uris",
+        ]
 
 
-class AlmacenCartasSerializer(serializers.ModelSerializer):
+class AlmacenCartaSerializer(serializers.ModelSerializer):
+    # Esto “anida” la carta completa dentro del objeto del stock
+    carta = CartaSerializer(read_only=True)
+
     class Meta:
         model = AlmacenCartas
-        fields = '__all__'
+        fields = [
+            "id_almacen",
+            "idioma",
+            "es_foil",
+            "cantidad",
+            "carta",
+        ]
 
 
-class AlmacenCartasDetailSerializer(serializers.ModelSerializer):
-    # Incluimos la carta completa para el inventario
-    carta = CartasSerializer(read_only=True)
-
-    class Meta:
-        model = AlmacenCartas
-        fields = ["id_almacen", "carta", "idioma", "es_foil", "cantidad"]
-
-
-class InventarioDetailSerializer(serializers.ModelSerializer):
-    almacen = AlmacenCartasDetailSerializer(many=True, read_only=True)
-
+class InventarioResumenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventario
-        fields = ["nombre_inventario", "usuario", "almacen"]
-
-
-class InventarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Inventario
-        # Exponemos el nombre del inventario (pk) y el usuario propietario
-        fields = ["nombre_inventario", "usuario"]
+        fields = ["nombre_inventario", "ultima_vez"]
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

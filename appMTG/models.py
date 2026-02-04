@@ -24,6 +24,7 @@ class Inventario(models.Model):
     share_token = models.CharField(
         max_length=64, unique=True, null=True, blank=True)
     is_sharing_enabled = models.BooleanField(default=False)
+    ultima_vez = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     # FK a usuario_mtg
     usuario = models.ForeignKey(
         usuario_mtg,
@@ -40,8 +41,13 @@ class Inventario(models.Model):
 
 class Carta(models.Model):
     id_scryfall = models.CharField(primary_key=True, max_length=64)
+    scryfall_uri = models.URLField(max_length=500, null=True, blank=True)
+    prints_search_uri = models.URLField(max_length=500, null=True, blank=True)
     nombre = models.TextField()
-
+    purchase_uris = models.JSONField(null=True, blank=True)  # Json de compras
+    border_color = models.CharField(max_length=20, default="black")
+    full_art = models.BooleanField(default=False, null=True, blank=True)
+    promo = models.BooleanField(default=False, null=True, blank=True)
     # URLField valida formato de URL, es mejor que TextField si realmente es una URL
     imagen_url = models.URLField(max_length=500)
 
