@@ -1,8 +1,8 @@
 ## Prueba view saveCardOne
 
+`URL : http://localhost:8000/api/cartas/guardar-una/`
 ```JSON
 
-`URL : http://localhost:8000/api/cartas/guardar-una/`
 {
     "id_mtg_user": 2,
     "nombre_user_mtg": "testuser",
