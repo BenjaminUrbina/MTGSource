@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'appMTG',
     "rest_framework",
-    "corsheaders"
+    "corsheaders",
+    "rest_framework_simplejwt",
+    "appMTG.apps.AppmtgConfig"
 ]
 
 MIDDLEWARE = [
@@ -78,8 +79,12 @@ WSGI_APPLICATION = 'mtgSource.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mtg_db',
+        'USER': 'mtg_user',
+        'PASSWORD': 'mtg_pass_123',
+        'HOST': 'localhost',
+        'PORT': '5433',
     }
 }
 
@@ -128,3 +133,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Conexiones permitidas con cors
 CORS_ALLOWED_ORIGINS = [
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
