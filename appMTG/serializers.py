@@ -59,3 +59,26 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validate_data['password']
         )
         return user
+
+
+class SaveCardOneSerializer(serializers.Serializer):
+    id_mtg_user = serializers.IntegerField()
+    nombre_user_mtg = serializers.CharField()
+    nombre_inventario = serializers.CharField()
+
+    id_scryfall_carta = serializers.CharField()
+    scryfall_uri_carta = serializers.URLField(required=False, allow_null=True, allow_blank=True)
+    prints_search_uri = serializers.URLField(required=False, allow_null=True, allow_blank=True)
+    nombre_carta = serializers.CharField()
+    purchase_uris_carta = serializers.JSONField(required=False, allow_null=True)
+    border_color = serializers.CharField(required=False, default="black")
+    full_art = serializers.BooleanField(required=False, default=False)
+    promo = serializers.BooleanField(required=False, default=False)
+    imagen_url = serializers.URLField()
+    oracle_id = serializers.CharField()
+    collector_number = serializers.IntegerField()
+    set_code = serializers.CharField()
+    type_line = serializers.CharField()
+
+    idioma_carta = serializers.CharField()
+    es_foil_carta = serializers.BooleanField(required=False, default=False)

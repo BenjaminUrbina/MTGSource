@@ -15,7 +15,10 @@ from .serializers import (
     InventarioResumenSerializer,
     AlmacenCartaSerializer,
     UserRegistrationSerializer,
+    SaveCardOneSerializer,
 )
+from django.db import transaction
+from django.db.models import F
 
 
 class MisInventariosViewSet(viewsets.ReadOnlyModelViewSet):
@@ -27,7 +30,6 @@ class MisInventariosViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # request.user es el User de Django
         perfil = usuario_mtg.objects.get(user=self.request.user)
 
         return (
@@ -67,21 +69,13 @@ class InventarioCartasViewSet(viewsets.ReadOnlyModelViewSet):
         )
         if not inventario:
             raise NotFound("Inventario no existe.")
-
-        # 1) Si el request viene con usuario autenticado, verificar si es dueño
         is_owner = False
         if self.request.user and self.request.user.is_authenticated:
             is_owner = (inventario.usuario.user_id == self.request.user.id)
 
-        # 2) Si es dueño: acceso total
         if is_owner:
             pass
         else:
-            # 3) Si NO es dueño: permitir SOLO si el inventario es público/compartible
-            #    Reglas recomendadas:
-            #    - Si is_public=True => cualquiera puede ver sin token
-            #    - Si is_public=False => solo si is_sharing_enabled=True y token coincide
-
             if inventario.is_public:
                 pass
             else:
@@ -91,13 +85,99 @@ class InventarioCartasViewSet(viewsets.ReadOnlyModelViewSet):
                 if not token or token != inventario.share_token:
                     raise PermissionDenied("Token inválido o faltante.")
 
-        # 4) Retornar cartas del inventario
         return (
             AlmacenCartas.objects
             .filter(inventario=inventario)
             .select_related("carta")
             .order_by("carta__nombre")
         )
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def saveCardOne(request):
+    """
+    Función que recibe un json, el cual obtiene una carta y tiene que agregarla a la base de datos
+
+    Usa: 
+    - El token del usuario para poder validar y asegurarse que es el user.
+    - Nombre del inventario a cual quiera agregarle la carta.
+    - La carta que quiere agregar.
+
+    Retorna:
+    - 201 cuando se cree todo con exito.
+    - 401 en caso que no este autenticado.
+    - 403 en caso que intente insertar la carta pero no sea su inventario.
+    - 404 en caso de que no encuentre el inventario.    
+    """
+
+    serializer = SaveCardOneSerializer(data=request.data)
+
+    if serializer.is_valid():
+        # Aqui tendria que ir la validacion para el user
+
+        data = serializer.validated_data
+
+        try:
+            usuarioMTG = usuario_mtg.objects.filter(
+                id_user=data["id_mtg_user"],
+                nombre=data['nombre_user_mtg']
+            ).first()
+            if not usuarioMTG:
+                raise NotFound("Usuario MTG no existe.")
+
+            inventario_view = Inventario.objects.filter(
+                usuario=usuarioMTG,
+                nombre_inventario=data['nombre_inventario'],
+            ).first()
+            if not inventario_view:
+                raise NotFound("Inventario no existe.")
+
+            carta_view, _ = Carta.objects.get_or_create(
+                id_scryfall=data['id_scryfall_carta'],
+                defaults={
+                    "scryfall_uri": data.get('scryfall_uri_carta'),
+                    "prints_search_uri": data.get('prints_search_uri'),
+                    "nombre": data['nombre_carta'],
+                    "purchase_uris": data.get('purchase_uris_carta'),
+                    "border_color": data.get('border_color', "black"),
+                    "full_art": data.get('full_art', False),
+                    "promo": data.get('promo', False),
+                    "imagen_url": data['imagen_url'],
+                    "oracle_id": data['oracle_id'],
+                    "collector_number": data['collector_number'],
+                    "set_code": data['set_code'],
+                    "type_line": data['type_line'],
+                },
+            )
+
+            with transaction.atomic():
+                almacen, created = AlmacenCartas.objects.get_or_create(
+                    inventario=inventario_view,
+                    carta=carta_view,
+                    idioma=data['idioma_carta'],
+                    es_foil=data.get('es_foil_carta', False),
+                    defaults={"cantidad": 1},
+                )
+                if not created:
+                    AlmacenCartas.objects.filter(pk=almacen.pk).update(
+                        cantidad=F("cantidad") + 1
+                    )
+                    almacen.refresh_from_db()
+
+            return Response(
+                {"id_almacen": almacen.id_almacen, "cantidad": almacen.cantidad},
+                status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+            )
+        except NotFound as e:
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except PermissionDenied as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
+        except ValidationError as e:
+            return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
