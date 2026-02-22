@@ -39,6 +39,10 @@ MTGSource busca **unificar estas funcionalidades en una sola plataforma**, pensa
 
 ---
 
+## Ver comportamiento de los VIEWS
+
+Puedes encontrar toda la información de los views en este [archivo](./pruebas_json/pruebas_json.md).
+
 ## 📌 Estado del proyecto
 
 🚧 **En desarrollo**
