@@ -44,6 +44,26 @@ class InventarioResumenSerializer(serializers.ModelSerializer):
         fields = ["nombre_inventario", "ultima_vez"]
 
 
+class UsuarioMTGSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = usuario_mtg
+        fields = ["id_user", "nombre"]
+
+
+class CurrentUserSerializer(serializers.ModelSerializer):
+    mtg_profile = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "username", "mtg_profile"]
+
+    def get_mtg_profile(self, obj):
+        profile = getattr(obj, "usuario_mtg", None)
+        if not profile:
+            return None
+        return UsuarioMTGSerializer(profile).data
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     # Don't show password in response
     password = serializers.CharField(write_only=True)
@@ -52,11 +72,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ["email", "username", "password"]
 
-    def create(self, validate_data):
-        user = User.create_user(
-            email=validate_data['email'],
-            username=validate_data['username'],
-            password=validate_data['password']
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            password=validated_data['password']
         )
         return user
 

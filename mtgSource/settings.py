@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from importlib.util import find_spec
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,6 +30,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+HAS_CORSHEADERS = find_spec("corsheaders") is not None
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,21 +40,25 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework",
-    "corsheaders",
     "rest_framework_simplejwt",
     "appMTG.apps.AppmtgConfig"
 ]
 
+if HAS_CORSHEADERS:
+    INSTALLED_APPS.append("corsheaders")
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if HAS_CORSHEADERS:
+    MIDDLEWARE.insert(2, 'corsheaders.middleware.CorsMiddleware')
 
 ROOT_URLCONF = 'mtgSource.urls'
 
@@ -132,6 +138,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Conexiones permitidas con cors
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173"  # Si usas Vite
 ]
 
 REST_FRAMEWORK = {

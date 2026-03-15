@@ -1,19 +1,15 @@
-from .serializers import AlmacenCartaSerializer
-from .models import AlmacenCartas, Inventario
-from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.permissions import AllowAny
-from rest_framework import viewsets
-from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Inventario, Carta, AlmacenCartas, usuario_mtg
 from .serializers import (
-    CartaSerializer,
-    InventarioResumenSerializer,
     AlmacenCartaSerializer,
+    CartaSerializer,
+    CurrentUserSerializer,
+    InventarioResumenSerializer,
     UserRegistrationSerializer,
     SaveCardOneSerializer,
 )
@@ -36,8 +32,6 @@ class MisInventariosViewSet(viewsets.ReadOnlyModelViewSet):
             Inventario.objects
             .filter(usuario=perfil)
         )
-
-
 @permission_classes([AllowAny])
 # Revisar manejo de caso de AttributeError
 class CartasViewSet(viewsets.ModelViewSet):
@@ -189,16 +183,19 @@ def register(request):
     if serializer.is_valid():
         user = serializer.save()
 
-        # Generate JWT token
         refresh = RefreshToken.for_user(user)
 
         return Response({
             'token': str(refresh.access_token),
-            'user': {
-                'id': user.id,
-                'email': user.email,
-                'username': user.username
-            }
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': CurrentUserSerializer(user).data,
         }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+    return Response(CurrentUserSerializer(request.user).data, status=status.HTTP_200_OK)

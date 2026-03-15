@@ -1,0 +1,52 @@
+.app-shell {
+  width: min(880px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 4rem 0;
+}
+
+.hero,
+.card {
+  padding: 1.5rem;
+  border: 1px solid #d6d9e0;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.hero {
+  margin-bottom: 1rem;
+}
+
+.card + .card {
+  margin-top: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4f46e5;
+}
+
+.lead {
+  margin: 0;
+  max-width: 60ch;
+  color: #4b5563;
+}
+
+h1,
+h2 {
+  margin-top: 0;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+code {
+  padding: 0.15rem 0.35rem;
+  border-radius: 6px;
+  background: #eef2ff;
+}
