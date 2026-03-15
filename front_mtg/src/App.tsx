@@ -1,34 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { API_BASE_URL } from './lib/api'
+
+const nextSteps = [
+  'Create an auth module for register, login and token refresh.',
+  'Add an inventory screen that consumes /api/mis-inventarios/.',
+  'Add shared API helpers and typed DTOs before feature work grows.',
+]
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <main className="app-shell">
+      <section className="hero">
+        <p className="eyebrow">MTGSource frontend</p>
+        <h1>React + TypeScript + Vite base</h1>
+        <p className="lead">
+          This is a clean starting point for the frontend. No UI system, no
+          routing, and no feature code yet.
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      </section>
+
+      <section className="card">
+        <h2>API</h2>
+        <p>
+          Default base URL: <code>{API_BASE_URL}</code>
+        </p>
+        <p>
+          In local development, Vite proxies <code>/api</code> to the Django
+          server on <code>http://127.0.0.1:8000</code>.
+        </p>
+      </section>
+
+      <section className="card">
+        <h2>Suggested next steps</h2>
+        <ul>
+          {nextSteps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ul>
+      </section>
+    </main>
   )
 }
 
