@@ -55,6 +55,6 @@ Actualmente, el proyecto se realiza en conjunto con inteligencia artificial para
 
 Los commits y push están en inglés netamente para practicar, pero el código y los comentarios están en español.
 
-Se utiliza PEP 57 para comentarios.
+Se utiliza PEP 257 para comentarios.
 
 El código más reciente del backend usará PEP 8, de a poco iré actualizando el código antiguo.
