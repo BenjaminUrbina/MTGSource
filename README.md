@@ -48,3 +48,13 @@ Puedes encontrar toda la información de los views en este [archivo](./pruebas_j
 🚧 **En desarrollo**
 
 Este es un **proyecto personal**, creado con el objetivo de materializar una idea y profundizar en el desarrollo de aplicaciones full-stack, con especial foco en backend, bases de datos y arquitectura.
+
+## Otros
+
+Actualmente, el proyecto se realiza en conjunto con inteligencia artificial para poder llevar a cabo experimentos de cómo se comporta, cómo trabaja y cómo es que me permite avanzar de manera más rápida en el desarrollo.
+
+Los commits y push están en inglés netamente para practicar, pero el código y los comentarios están en español.
+
+Se utiliza PEP 57 para comentarios.
+
+El código más reciente del backend usará PEP 8, de a poco iré actualizando el código antiguo.
